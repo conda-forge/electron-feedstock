@@ -15,12 +15,15 @@ Build cross platform desktop apps with JavaScript, HTML, and CSS
 Current build status
 ====================
 
-All platforms: [![Circle CI](https://circleci.com/gh/conda-forge/electron-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/electron-feedstock)
+All platforms:
+[![noarch](https://img.shields.io/circleci/project/github/conda-forge/electron-feedstock/master.svg?label=noarch)](https://circleci.com/gh/conda-forge/electron-feedstock)
 
 Current release info
 ====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/electron/badges/version.svg)](https://anaconda.org/conda-forge/electron)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/electron/badges/downloads.svg)](https://anaconda.org/conda-forge/electron)
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-electron-green.svg)](https://anaconda.org/conda-forge/electron) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/electron.svg)](https://anaconda.org/conda-forge/electron) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/electron.svg)](https://anaconda.org/conda-forge/electron) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/electron.svg)](https://anaconda.org/conda-forge/electron) |
 
 Installing electron
 ===================

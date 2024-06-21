@@ -15,8 +15,9 @@ Build cross platform desktop apps with JavaScript, HTML, and CSS
 Current build status
 ====================
 
-All platforms:
-[![noarch](https://img.shields.io/circleci/project/github/conda-forge/electron-feedstock/master.svg?label=noarch)](https://circleci.com/gh/conda-forge/electron-feedstock)
+[![Linux](https://img.shields.io/circleci/project/github/conda-forge/electron-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/electron-feedstock)
+[![OSX](https://img.shields.io/travis/conda-forge/electron-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/electron-feedstock)
+[![Windows](https://img.shields.io/appveyor/ci/conda-forge/electron-feedstock/master.svg?label=Windows)](https://ci.appveyor.com/project/conda-forge/electron-feedstock/branch/master)
 
 Current release info
 ====================

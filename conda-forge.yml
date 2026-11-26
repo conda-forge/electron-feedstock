@@ -8,3 +8,8 @@ github:
 conda_build:
   pkg_format: '2'
 test: native_and_emulated
+linter:
+  skip:
+    # Upstream binaries need macOS 12; constrain __osx directly instead of
+    # raising c_stdlib_version, since nothing is compiled.
+    - lint_stdlib

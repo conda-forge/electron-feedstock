@@ -1,41 +1,108 @@
 {% set name = "electron" %}
-{% set version = "1.6.15" %}
-{% set sha256 = "19e462172af5c0db1bef8d8fe482bf2e8edb1a2cdbd1c06c5b0712651996fb8d" %}
+{% set version = "45.5.0" %}
+
+{% if linux and x86_64 %}
+{% set plat = "linux-x64" %}
+{% set sha256 = "36b44cd0c3d355ee74557bea2353e4539f96e1a09733a52a052bd093134a6142" %}
+{% elif linux and aarch64 %}
+{% set plat = "linux-arm64" %}
+{% set sha256 = "f2bd21b4167dbf0d27968347127afa6703161fdb513b1f3c61da5de9289cac0a" %}
+{% elif osx and x86_64 %}
+{% set plat = "darwin-x64" %}
+{% set sha256 = "9ce4b0e25ce95e743b2d8f04ebfbfd76027060ff8b47829de22334fbdbdd4cc4" %}
+{% elif osx and arm64 %}
+{% set plat = "darwin-arm64" %}
+{% set sha256 = "00d345b061064de7e6e2c02bec7ffa1adb7ef488fe4b673bd8ad3e059a182245" %}
+{% elif win and x86_64 %}
+{% set plat = "win32-x64" %}
+{% set sha256 = "20155c8b8aa5b1f575f3757bdf21490e0bac2f19a65a26ce9ba99bcf9f2c69bd" %}
+{% else %}
+{% set plat = "unsupported" %}
+{% set sha256 = "" %}
+{% endif %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/electron/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/electron/electron/releases/download/v{{ version }}/electron-v{{ version }}-{{ plat }}.zip
   sha256: {{ sha256 }}
+  folder: electron
 
 build:
   number: 0
-  noarch: generic
-  script: |
-    tgz=$(npm pack)
-    npm install -g $tgz
+  skip: true  # [not (linux64 or aarch64 or osx or win64)]
+  # Prebuilt upstream binaries: don't let conda-build patch them (would break
+  # macOS code signatures).
+  binary_relocation: false  # [not linux]
+  # On Linux set RPATHs so the bundled libffmpeg.so ($ORIGIN) and conda's
+  # libgcc, gtk3, nss, ... ($ORIGIN/..) are found.
+  rpaths:                   # [linux]
+    - lib/electron/         # [linux]
+    - lib/                  # [linux]
+  detect_binary_files_with_prefix: false
 
 requirements:
   build:
-    - nodejs
-  
+    - {{ stdlib("c") }}  # [linux]
+  host:
+    - libgcc          # [linux]
+    - alsa-lib        # [linux]
+    - at-spi2-atk     # [linux]
+    - at-spi2-core    # [linux]
+    - atk-1.0         # [linux]
+    - cairo           # [linux]
+    - dbus            # [linux]
+    - expat           # [linux]
+    - glib            # [linux]
+    - gtk3            # [linux]
+    - libcups         # [linux]
+    - libgbm          # [linux]
+    - libudev         # [linux]
+    - libxkbcommon    # [linux]
+    - nspr            # [linux]
+    - nss             # [linux]
+    - pango           # [linux]
+    - xorg-libx11     # [linux]
+    - libxcb          # [linux]
+    - xorg-libxcomposite  # [linux]
+    - xorg-libxdamage     # [linux]
+    - xorg-libxext        # [linux]
+    - xorg-libxfixes      # [linux]
+    - xorg-libxrandr      # [linux]
+  run:
+    # Upstream binaries need glibc >=2.25, newer than the default sysroot.
+    - __glibc >=2.25  # [linux]
+    - libgcc          # [linux]
+    - __osx >=12.0    # [osx]
+
 test:
   commands:
-    - npm list -g electron
-  requires:
-    - nodejs
-   
+    - test -x $PREFIX/lib/electron/electron                                  # [linux]
+    - test -f $PREFIX/lib/electron/resources/default_app.asar                # [linux]
+    - test "$(cat $PREFIX/lib/electron/version)" = "{{ version }}"           # [linux]
+    - test -L $PREFIX/bin/electron                                           # [unix]
+    - readelf -d $PREFIX/lib/electron/electron | grep -E 'R(UN)?PATH.*\$ORIGIN'  # [linux]
+    - test -x $PREFIX/lib/electron/Electron.app/Contents/MacOS/Electron      # [osx]
+    - test -L $PREFIX/lib/electron/Electron.app/Contents/Frameworks/Electron\ Framework.framework/Electron\ Framework  # [osx]
+    - codesign --verify --deep --strict $PREFIX/lib/electron/Electron.app    # [osx]
+    - if not exist %LIBRARY_LIB%\electron\electron.exe exit 1                # [win]
+    - if not exist %LIBRARY_LIB%\electron\resources\default_app.asar exit 1  # [win]
+    - if not exist %LIBRARY_BIN%\electron.bat exit 1                         # [win]
+
 about:
-  home: https://github.com/electron/electron
+  home: https://www.electronjs.org/
   license: MIT
   license_family: MIT
-  license_file: LICENSE
-  summary: 'Build cross platform desktop apps with JavaScript, HTML, and CSS'
+  license_file:
+    - electron/LICENSE
+    - electron/LICENSES.chromium.html
+  summary: Build cross platform desktop apps with JavaScript, HTML, and CSS
   description: |
-    Build cross platform desktop apps with JavaScript, HTML, and CSS 
-  doc_url: https://electron.atom.io/
+    Build cross platform desktop apps with JavaScript, HTML, and CSS.
+    This package repackages the official prebuilt Electron release binaries.
+  doc_url: https://www.electronjs.org/docs
   dev_url: https://github.com/electron/electron
 
 extra:

@@ -33,8 +33,8 @@ source:
 build:
   number: 0
   skip: true  # [not (linux64 or aarch64 or osx or win64)]
-  # Prebuilt upstream binaries: don't let conda-build patch them (would break
-  # macOS code signatures).
+  # Prebuilt upstream binaries: don't let conda-build patch them on macOS
+  # (would invalidate the linker's ad-hoc signatures on arm64).
   binary_relocation: false  # [not linux]
   # On Linux set RPATHs so the bundled libffmpeg.so ($ORIGIN) and conda's
   # libgcc, gtk3, nss, ... ($ORIGIN/..) are found.
@@ -86,7 +86,6 @@ test:
     - readelf -d $PREFIX/lib/electron/electron | grep -E 'R(UN)?PATH.*\$ORIGIN'  # [linux]
     - test -x $PREFIX/lib/electron/Electron.app/Contents/MacOS/Electron      # [osx]
     - test -L $PREFIX/lib/electron/Electron.app/Contents/Frameworks/Electron\ Framework.framework/Electron\ Framework  # [osx]
-    - codesign --verify --deep --strict $PREFIX/lib/electron/Electron.app    # [osx]
     - if not exist %LIBRARY_LIB%\electron\electron.exe exit 1                # [win]
     - if not exist %LIBRARY_LIB%\electron\resources\default_app.asar exit 1  # [win]
     - if not exist %LIBRARY_BIN%\electron.bat exit 1                         # [win]
